@@ -21,7 +21,7 @@
             font-family: 'Space Grotesk', sans-serif;
         }
 
-        /* Futuristic Background */
+        /* Background Animations */
         .bg-canvas {
             position: fixed;
             inset: 0;
@@ -107,16 +107,25 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* High Resolution Profile Image Fix */
+        /* High Resolution Profile */
         .profile-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             object-position: center;
             image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
             filter: contrast(1.05) saturate(1.1);
             border-radius: 1.5rem;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            transform: translateY(-100%);
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        
+        .mobile-menu.open {
+            transform: translateY(0);
         }
 
         /* Futuristic Popup */
@@ -236,6 +245,55 @@
         <div id="neon-lines" class="absolute inset-0"></div>
     </div>
 
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10 py-4">
+        <div class="max-w-7xl mx-auto px-5 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center gap-x-2">
+                <div class="w-8 h-8 rounded-2xl bg-gradient-to-br from-[#22f0ff] to-[#c724ff] flex items-center justify-center text-xl neon-glow">⚡</div>
+                <h1 class="text-2xl font-semibold heading-font tracking-tight">Daily <span class="gradient-text">tool</span></h1>
+            </div>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-x-8 text-sm font-medium uppercase tracking-widest">
+                <a onclick="document.getElementById('tools').scrollIntoView({ behavior: 'smooth' }); closeMobileMenu()" 
+                   class="hover:text-[#22f0ff] cursor-pointer">TOOLS</a>
+                <a href="#" onclick="closeMobileMenu()" class="hover:text-[#22f0ff]">STORY</a>
+                <a href="https://mdarahim.vercel.app" onclick="closeMobileMenu()" class="hover:text-[#22f0ff]" target="_blank">CONTACT</a>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <button id="hamburger" 
+                    class="md:hidden w-10 h-10 flex items-center justify-center text-3xl focus:outline-none z-50"
+                    onclick="toggleMobileMenu()">
+                ☰
+            </button>
+
+            <!-- Right side profile hint -->
+            <div class="hidden sm:flex items-center gap-x-3">
+                <div class="text-xs font-medium px-4 py-1.5 rounded-3xl glass text-[#22f0ff]">LIVE</div>
+                <div class="w-9 h-9 rounded-2xl overflow-hidden border-2 border-white/30">
+                    <img src="Rahim.jpg" alt="A. Rahim" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu fixed inset-x-0 top-0 bg-[#05050f]/95 backdrop-blur-3xl glass border-b border-white/10 md:hidden z-40 py-6 px-5">
+            <div class="flex flex-col gap-6 text-center text-lg font-medium">
+                <a onclick="document.getElementById('tools').scrollIntoView({ behavior: 'smooth' }); closeMobileMenu()" 
+                   class="py-4 hover:text-[#22f0ff] border-b border-white/10">TOOLS</a>
+                <a href="#" onclick="closeMobileMenu()" class="py-4 hover:text-[#22f0ff] border-b border-white/10">STORY</a>
+                <a href="#" onclick="closeMobileMenu()" class="py-4 hover:text-[#22f0ff]">CONTACT</a>
+                
+                <button onclick="closeMobileMenu()" 
+                        class="mt-6 mx-auto px-10 py-4 border border-[#22f0ff]/60 rounded-2xl hover:bg-[#22f0ff]/10">
+                    CLOSE
+                </button>
+            </div>
+        </div>
+    </nav>
+
     <!-- FUTURISTIC WELCOME POPUP -->
     <div id="welcome-popup" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-3xl px-4">
         <div id="popup-card" class="glass w-full max-w-md sm:max-w-lg mx-auto rounded-3xl p-8 sm:p-14 text-center relative">
@@ -272,31 +330,8 @@
         </div>
     </div>
 
-    <!-- NAVBAR -->
-    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10 py-4 sm:py-5">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8 flex items-center justify-between">
-            <div class="flex items-center gap-x-2">
-                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-2xl bg-gradient-to-br from-[#22f0ff] to-[#c724ff] flex items-center justify-center text-lg sm:text-xl neon-glow">⚡</div>
-                <h1 class="text-2xl sm:text-3xl font-semibold heading-font tracking-tight">Daily <span class="gradient-text">tool</span></h1>
-            </div>
-
-            <div class="hidden md:flex items-center gap-x-8 text-sm font-medium uppercase tracking-widest">
-                <a onclick="document.getElementById('tools').scrollIntoView({ behavior: 'smooth' })" class="hover:text-[#22f0ff] cursor-pointer">TOOLS</a>
-                <a href="#" class="hover:text-[#22f0ff]">STORY</a>
-                <a href="https://mdarahim.vercel.app" class="hover:text-[#22f0ff]" target="_blank">CONTACT</a>
-            </div>
-
-            <div class="flex items-center gap-x-3">
-                <div class="hidden sm:block text-xs font-medium px-4 py-1.5 rounded-3xl glass text-[#22f0ff]">LIVE</div>
-                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl overflow-hidden border-2 border-white/30 hover:border-[#22f0ff] cursor-pointer">
-                    <img  src="Rahim.jpg" alt="A. Rahim Profile" class="profile-img shadow-2xl neon-glow border-4 border-[#22f0ff]/70"   loading="eager">
-                </div>
-            </div>
-        </div>
-    </nav>
-
     <!-- HERO SECTION -->
-    <section id="hero" class="min-h-screen pt-20 sm:pt-24 flex items-center relative px-5">
+    <section id="hero" class="min-h-screen pt-24 flex items-center relative px-5">
         <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
                 <div class="inline-flex items-center gap-3 px-6 py-3 glass rounded-3xl text-sm font-medium mx-auto lg:mx-0">
@@ -308,15 +343,14 @@
                 </h1>
 
                 <p class="max-w-lg mx-auto lg:mx-0 text-xl sm:text-2xl md:text-3xl text-white/80 font-light leading-tight">
-                    OWNER OF DAILY TOOL, 
+                    OWNER OF DAILY TOOL,  
                     <span class="text-[#22f0ff]">interactive, high-quality digital experiences to easy your daily tasks</span>.
                 </p>
             </div>
 
-            <!-- HIGH RESOLUTION PROFILE IMAGE -->
+            <!-- High Resolution Profile -->
             <div class="lg:col-span-5 flex justify-center lg:justify-end">
                 <div class="relative w-64 sm:w-80 md:w-96 aspect-square">
-                    <!-- Replace the src with your own high-resolution photo URL -->
                     <img 
                         src="Abdur.jpg" 
                         alt="A. Rahim Profile"
@@ -338,7 +372,7 @@
             </div>
 
             <div id="tools-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
-                <a href="BMR BMI/index.html" 
+                <a href="https://www.calculator.net/bmi-calculator.html" 
                    target="_blank"
                    class="tool-button p-6 sm:p-8 flex flex-col items-center justify-center text-center min-h-[200px] sm:min-h-[220px]">
                     <div class="text-5xl sm:text-6xl mb-6 text-[#22f0ff]">📏</div>
@@ -364,6 +398,27 @@
     </footer>
 
     <script>
+        // Mobile Menu Functions
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const hamburger = document.getElementById('hamburger');
+            
+            menu.classList.toggle('open');
+            
+            if (menu.classList.contains('open')) {
+                hamburger.textContent = '✕';
+            } else {
+                hamburger.textContent = '☰';
+            }
+        }
+
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const hamburger = document.getElementById('hamburger');
+            menu.classList.remove('open');
+            hamburger.textContent = '☰';
+        }
+
         function initialize() {
             createBackgroundOrbs();
             createNeonLines();
@@ -372,7 +427,10 @@
             startTypingAnimation();
 
             document.addEventListener('keydown', (e) => {
-                if (e.key === "Escape") closePopup();
+                if (e.key === "Escape") {
+                    closePopup();
+                    closeMobileMenu();
+                }
             });
 
             document.getElementById('welcome-popup').addEventListener('click', (e) => {
