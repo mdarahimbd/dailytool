@@ -1,327 +1,486 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMI ও BMR ক্যালকুলেটর</title>
-    
-    <!-- Tailwind CSS -->
+    <title>Daily Tool</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts (Hind Siliguri for Bengali) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap');
+
+        :root {
+            --neon-cyan: #22f0ff;
+            --neon-purple: #c724ff;
+        }
+
         body {
-            font-family: 'Hind Siliguri', sans-serif;
+            font-family: 'Inter', system_ui, sans-serif;
         }
-        /* Remove default arrows from number inputs */
-        input[type="number"]::-webkit-inner-spin-button, 
-        input[type="number"]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
+
+        .heading-font {
+            font-family: 'Space Grotesk', sans-serif;
         }
-        input[type="number"] {
-            -moz-appearance: textfield;
+
+        /* Futuristic Background */
+        .bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: radial-gradient(circle at 50% 30%, #0a0a1f 0%, #05050f 40%, #020208 80%);
+            overflow: hidden;
+        }
+
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(34, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: grid-move 40s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes grid-move {
+            0% { background-position: 0 0; }
+            100% { background-position: 120px 120px; }
+        }
+
+        .energy-orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, #22f0ff 0%, transparent 70%);
+            filter: blur(20px);
+            opacity: 0.15;
+            animation: float-orb linear infinite;
+        }
+
+        @keyframes float-orb {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(var(--x), var(--y)) scale(1.3); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        .neon-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #22f0ff, transparent);
+            box-shadow: 0 0 15px #22f0ff;
+            animation: neon-line-move 25s linear infinite;
+        }
+
+        @keyframes neon-line-move {
+            0% { transform: translateX(-100%); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateX(300%); opacity: 0; }
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid rgba(34, 240, 255, 0.25);
+        }
+
+        .neon-glow {
+            animation: neon-pulse 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes neon-pulse {
+            from { box-shadow: 0 0 20px #22f0ff, 0 0 40px #22f0ff, 0 0 60px #c724ff; }
+            to { box-shadow: 0 0 30px #22f0ff, 0 0 60px #22f0ff, 0 0 90px #c724ff; }
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #22f0ff, #c724ff, #22f0ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: gradient-shift 3s linear infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* High Resolution Profile Image Fix */
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            filter: contrast(1.05) saturate(1.1);
+            border-radius: 1.5rem;
+        }
+
+        /* Futuristic Popup */
+        #popup-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        #popup-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(34, 240, 255, 0.15) 50%, transparent 70%);
+            animation: scanline-popup 4s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes scanline-popup {
+            0% { transform: translateY(-150%); }
+            100% { transform: translateY(300%); }
+        }
+
+        .futuristic-text {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            animation: text-glitch 1.8s infinite alternate;
+        }
+
+        @keyframes text-glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .holo-ring {
+            position: absolute;
+            inset: -40px;
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, #22f0ff, #c724ff) 1;
+            border-radius: 9999px;
+            animation: holo-rotate 15s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes holo-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .particle {
+            position: absolute;
+            background: #22f0ff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #22f0ff;
+            animation: particle-float 7s linear infinite;
+        }
+
+        .tool-button {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(34, 240, 255, 0.3);
+        }
+
+        .tool-button:hover {
+            transform: scale(1.05) translateY(-6px);
+            border-color: #22f0ff;
+            box-shadow: 0 0 40px 10px rgba(34, 240, 255, 0.5);
+        }
+
+        .typing-container {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            color: #22f0ff;
+            text-shadow: 0 0 10px #22f0ff, 0 0 20px #22f0ff, 0 0 40px #c724ff;
+            animation: neon-text 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes neon-text {
+            from { text-shadow: 0 0 8px #22f0ff, 0 0 15px #22f0ff; }
+            to { text-shadow: 0 0 15px #22f0ff, 0 0 30px #22f0ff, 0 0 50px #c724ff; }
+        }
+
+        .typing-text {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid #22f0ff;
+            animation: typing 4s steps(38, end) forwards, blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #22f0ff; }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen flex items-center justify-center p-4 text-gray-800">
+<body class="bg-[#05050f] text-white overflow-x-hidden min-h-screen">
 
-    <!-- Main Card Container -->
-    <div class="bg-white rounded-[2rem] shadow-2xl flex flex-col md:flex-row w-full max-w-5xl overflow-hidden border-4 border-white">
-        
-        <!-- Left Side: Input Form -->
-        <div class="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center">
-            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-2">স্বাস্থ্য ক্যালকুলেটর</h1>
-            <p class="text-gray-500 mb-8 font-medium">আপনার বডি মাস ইনডেক্স (BMI) এবং বেসাল মেটাবলিক রেট (BMR) জেনে নিন।</p>
-            
-            <form id="health-form" class="space-y-6">
-                <!-- Gender Selection -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-3">লিঙ্গ নির্বাচন করুন</label>
-                    <div class="flex gap-4">
-                        <label class="flex-1 cursor-pointer">
-                            <input type="radio" name="gender" id="male" value="male" class="peer hidden" checked>
-                            <div class="flex flex-col items-center justify-center p-4 border-2 border-gray-100 rounded-2xl peer-checked:border-blue-500 peer-checked:bg-blue-50 text-gray-500 peer-checked:text-blue-600 transition-all shadow-sm">
-                                <span class="text-3xl mb-1 drop-shadow-md">👨</span>
-                                <span class="font-bold">ছেলে</span>
-                            </div>
-                        </label>
-                        <label class="flex-1 cursor-pointer">
-                            <input type="radio" name="gender" id="female" value="female" class="peer hidden">
-                            <div class="flex flex-col items-center justify-center p-4 border-2 border-gray-100 rounded-2xl peer-checked:border-pink-500 peer-checked:bg-pink-50 text-gray-500 peer-checked:text-pink-600 transition-all shadow-sm">
-                                <span class="text-3xl mb-1 drop-shadow-md">👩</span>
-                                <span class="font-bold">মেয়ে</span>
-                            </div>
-                        </label>
+    <!-- FUTURISTIC ANIMATED BACKGROUND -->
+    <div class="bg-canvas">
+        <div class="bg-grid"></div>
+        <div id="orbs" class="absolute inset-0"></div>
+        <div id="neon-lines" class="absolute inset-0"></div>
+    </div>
+
+    <!-- FUTURISTIC WELCOME POPUP -->
+    <div id="welcome-popup" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-3xl px-4">
+        <div id="popup-card" class="glass w-full max-w-md sm:max-w-lg mx-auto rounded-3xl p-8 sm:p-14 text-center relative">
+            <div class="holo-ring"></div>
+            <div class="holo-ring" style="inset: -55px; animation-delay: -5s; opacity: 0.35;"></div>
+            <div id="particles" class="absolute inset-0 pointer-events-none"></div>
+
+            <div class="relative z-10">
+                <div class="mx-auto mb-8 w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
+                    <div class="neon-glow relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-[#22f0ff] flex items-center justify-center">
+                        <span class="text-5xl sm:text-6xl">⚡</span>
+                        <div class="absolute inset-0 rounded-full border border-[#c724ff] animate-ping"></div>
                     </div>
                 </div>
 
-                <!-- Input Fields (Age, Weight, Feet, Inches) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Age -->
-                    <div>
-                        <label for="age" class="block text-sm font-semibold text-gray-700 mb-1">বয়স</label>
-                        <div class="relative">
-                            <input type="number" id="age" required min="1" max="120" placeholder="যেমন: ২৫" class="w-full pl-4 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all font-medium text-lg">
-                            <span class="absolute right-4 top-3.5 text-gray-400 font-medium">বছর</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Weight -->
-                    <div>
-                        <label for="weight" class="block text-sm font-semibold text-gray-700 mb-1">ওজন</label>
-                        <div class="relative">
-                            <input type="number" id="weight" required min="1" step="0.1" placeholder="যেমন: ৬৫" class="w-full pl-4 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all font-medium text-lg">
-                            <span class="absolute right-4 top-3.5 text-gray-400 font-medium">কেজি</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Height (Feet) -->
-                    <div>
-                        <label for="feet" class="block text-sm font-semibold text-gray-700 mb-1">উচ্চতা (ফুট)</label>
-                        <div class="relative">
-                            <input type="number" id="feet" required min="1" max="8" placeholder="যেমন: ৫" class="w-full pl-4 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all font-medium text-lg">
-                            <span class="absolute right-4 top-3.5 text-gray-400 font-medium">ফুট</span>
-                        </div>
-                    </div>
+                <h1 class="futuristic-text text-4xl sm:text-5xl font-bold tracking-[3px] mb-2 text-white">WELCOME</h1>
+                <p class="text-3xl sm:text-4xl font-semibold heading-font gradient-text tracking-[-1px] mb-4">DAILY TOOL</p>
+                <div class="text-lg sm:text-xl text-[#22f0ff] font-medium mb-8 tracking-widest">by ABDUR RAHIM</div>
 
-                    <!-- Height (Inches) -->
-                    <div>
-                        <label for="inches" class="block text-sm font-semibold text-gray-700 mb-1">উচ্চতা (ইঞ্চি)</label>
-                        <div class="relative">
-                            <input type="number" id="inches" required min="0" max="11" step="0.1" placeholder="যেমন: ৬" class="w-full pl-4 pr-14 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all font-medium text-lg">
-                            <span class="absolute right-4 top-3.5 text-gray-400 font-medium">ইঞ্চি</span>
-                        </div>
-                    </div>
-                </div>
+                <p class="text-white/80 text-base sm:text-lg leading-relaxed mb-10 px-4">
+                    Entering the realm of futuristic digital experiences
+                </p>
 
-                <!-- Submit Button -->
-                <button type="submit" class="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transform transition-all active:scale-95 mt-2">
-                    হিসেব করুন
+                <button onclick="closePopup()" 
+                        class="w-full sm:w-auto group relative overflow-hidden px-12 py-5 text-base sm:text-lg font-semibold rounded-2xl border border-[#22f0ff]/60 hover:border-[#22f0ff] neon-glow">
+                    <span class="relative z-10 flex items-center justify-center gap-3">
+                        INITIATE EXPERIENCE
+                        <span class="text-xl sm:text-2xl group-hover:rotate-45 transition-transform">⟶</span>
+                    </span>
                 </button>
-            </form>
-        </div>
 
-        <!-- Right Side: Avatar & Results -->
-        <div class="w-full md:w-1/2 bg-gradient-to-b from-indigo-50 to-blue-100 p-8 md:p-10 flex flex-col items-center justify-center relative border-l border-gray-100">
-            
-            <!-- Character Stage -->
-            <div class="relative h-64 flex items-end justify-center mb-8">
-                <!-- Avatar Scale Wrapper for BMI Animation -->
-                <div id="avatar-scale" class="transition-transform duration-700 ease-in-out origin-bottom h-full flex flex-col items-center">
-                    
-                    <!-- Boy SVG -->
-                    <svg viewBox="0 0 100 200" class="h-full drop-shadow-xl" id="boy-svg">
-                        <rect x="35" y="120" width="10" height="70" rx="4" fill="#1E3A8A" />
-                        <rect x="55" y="120" width="10" height="70" rx="4" fill="#1E3A8A" />
-                        <rect x="25" y="60" width="50" height="65" rx="15" fill="#3B82F6" />
-                        <rect x="10" y="65" width="10" height="50" rx="4" fill="#FDBA74" />
-                        <rect x="80" y="65" width="10" height="50" rx="4" fill="#FDBA74" />
-                        <circle cx="50" cy="35" r="20" fill="#FDBA74" />
-                        <path d="M 30 30 Q 50 5 70 30 Q 50 15 30 30" fill="#1F2937" />
-                        <circle cx="42" cy="32" r="2.5" fill="#111827" />
-                        <circle cx="58" cy="32" r="2.5" fill="#111827" />
-                        <path d="M 44 42 Q 50 48 56 42" stroke="#111827" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                    </svg>
-
-                    <!-- Girl SVG -->
-                    <svg viewBox="0 0 100 200" class="h-full drop-shadow-xl hidden" id="girl-svg">
-                        <rect x="35" y="120" width="9" height="70" rx="4" fill="#BE185D" />
-                        <rect x="56" y="120" width="9" height="70" rx="4" fill="#BE185D" />
-                        <path d="M 35 60 L 20 135 A 4 4 0 0 0 24 140 L 76 140 A 4 4 0 0 0 80 135 L 65 60 Z" fill="#EC4899" />
-                        <rect x="13" y="65" width="9" height="50" rx="4" fill="#FDBA74" />
-                        <rect x="78" y="65" width="9" height="50" rx="4" fill="#FDBA74" />
-                        <rect x="25" y="20" width="50" height="65" rx="15" fill="#451A03" />
-                        <circle cx="50" cy="35" r="20" fill="#FDBA74" />
-                        <path d="M 28 35 Q 50 10 72 35 Q 50 20 28 35" fill="#451A03" />
-                        <circle cx="42" cy="32" r="2.5" fill="#111827" />
-                        <circle cx="58" cy="32" r="2.5" fill="#111827" />
-                        <path d="M 44 42 Q 50 48 56 42" stroke="#111827" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                    </svg>
-                    
-                </div>
-                <!-- Floor Shadow -->
-                <div class="absolute bottom-0 w-32 h-3 bg-black/10 rounded-[100%] blur-[2px] -z-10"></div>
+                <p class="mt-8 text-xs text-white/40 tracking-widest">TAP ANYWHERE OUTSIDE OR PRESS ESC</p>
             </div>
-
-            <!-- Result Box -->
-            <div id="result-box" class="w-full bg-white rounded-2xl p-6 shadow-lg opacity-0 translate-y-4 transition-all duration-500 ease-out hidden">
-                <h3 class="text-xl font-bold text-gray-800 border-b pb-3 mb-3 text-center">আপনার ফলাফল</h3>
-                
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-gray-500 font-semibold text-lg">আপনার BMI:</span>
-                    <span id="bmi-result" class="text-2xl font-black text-blue-600">--</span>
-                </div>
-                
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-gray-500 font-semibold text-lg">আপনার BMR:</span>
-                    <span id="bmr-result" class="text-xl font-bold text-purple-600">--</span>
-                </div>
-                
-                <!-- Health Status (Text color changes dynamically) -->
-                <div class="mt-4 pt-4 border-t border-gray-100 text-center">
-                    <p id="health-status" class="text-lg font-bold">---</p>
-                </div>
-
-                <!-- Suggestions / Advice Section -->
-                <div id="advice-section" class="mt-4 pt-4 border-t border-gray-100 text-left bg-gray-50 p-4 rounded-xl hidden">
-                    <h4 class="text-md font-bold text-gray-800 mb-2 flex items-center gap-2">
-                        <span>💡</span> আপনার জন্য পরামর্শ:
-                    </h4>
-                    <ul id="advice-list" class="list-none text-sm text-gray-600 space-y-2 leading-relaxed">
-                        <!-- Dynamic advice injected here -->
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Default Placeholder Text -->
-            <p id="waiting-text" class="absolute bottom-10 text-gray-400 font-medium animate-pulse text-center">ফলাফল দেখতে ফর্মটি পূরণ করুন</p>
-            
         </div>
     </div>
 
-    <!-- Application Logic -->
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10 py-4 sm:py-5">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8 flex items-center justify-between">
+            <div class="flex items-center gap-x-2">
+                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-2xl bg-gradient-to-br from-[#22f0ff] to-[#c724ff] flex items-center justify-center text-lg sm:text-xl neon-glow">⚡</div>
+                <h1 class="text-2xl sm:text-3xl font-semibold heading-font tracking-tight">Daily <span class="gradient-text">tool</span></h1>
+            </div>
+
+            <div class="hidden md:flex items-center gap-x-8 text-sm font-medium uppercase tracking-widest">
+                <a onclick="document.getElementById('tools').scrollIntoView({ behavior: 'smooth' })" class="hover:text-[#22f0ff] cursor-pointer">TOOLS</a>
+                <a href="#" class="hover:text-[#22f0ff]">STORY</a>
+                <a href="https://mdarahim.vercel.app" class="hover:text-[#22f0ff]" target="_blank">CONTACT</a>
+            </div>
+
+            <div class="flex items-center gap-x-3">
+                <div class="hidden sm:block text-xs font-medium px-4 py-1.5 rounded-3xl glass text-[#22f0ff]">LIVE</div>
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl overflow-hidden border-2 border-white/30 hover:border-[#22f0ff] cursor-pointer">
+                    <img  src="Rahim.jpg" alt="A. Rahim Profile" class="profile-img shadow-2xl neon-glow border-4 border-[#22f0ff]/70"   loading="eager">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="min-h-screen pt-20 sm:pt-24 flex items-center relative px-5">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <div class="inline-flex items-center gap-3 px-6 py-3 glass rounded-3xl text-sm font-medium mx-auto lg:mx-0">
+                    <span class="text-[#22f0ff]">✺</span> CRAFTED WITH PASSION <span class="text-[#22f0ff]">✺</span>
+                </div>
+
+                <h1 class="hero-name text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-none font-semibold heading-font gradient-text">
+                    ABDUR RAHIM
+                </h1>
+
+                <p class="max-w-lg mx-auto lg:mx-0 text-xl sm:text-2xl md:text-3xl text-white/80 font-light leading-tight">
+                    OWNER OF DAILY TOOL, 
+                    <span class="text-[#22f0ff]">interactive, high-quality digital experiences to easy your daily tasks</span>.
+                </p>
+            </div>
+
+            <!-- HIGH RESOLUTION PROFILE IMAGE -->
+            <div class="lg:col-span-5 flex justify-center lg:justify-end">
+                <div class="relative w-64 sm:w-80 md:w-96 aspect-square">
+                    <!-- Replace the src with your own high-resolution photo URL -->
+                    <img 
+                        src="Abdur.jpg" 
+                        alt="A. Rahim Profile"
+                        class="profile-img shadow-2xl neon-glow border-4 border-[#22f0ff]/70"
+                        loading="eager">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOOLS SECTION -->
+    <section id="tools" class="py-20 sm:py-28 relative px-5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12 sm:mb-16">
+                <span class="px-5 py-2 text-xs font-semibold uppercase tracking-[2px] border border-[#22f0ff]/30 text-[#22f0ff] rounded-3xl">INTERACTIVE COLLECTION</span>
+                <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl heading-font font-medium mt-4 leading-tight">
+                    Powerful tools.<br class="hidden sm:block">Beautifully simple.
+                </h2>
+            </div>
+
+            <div id="tools-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+                <a href="BMR BMI/index.html" 
+                   target="_blank"
+                   class="tool-button p-6 sm:p-8 flex flex-col items-center justify-center text-center min-h-[200px] sm:min-h-[220px]">
+                    <div class="text-5xl sm:text-6xl mb-6 text-[#22f0ff]">📏</div>
+                    <h3 class="text-2xl sm:text-3xl font-semibold mb-2">BMI &amp; BMR</h3>
+                    <p class="text-white/60 text-sm">Body Mass &amp; Metabolic Rate Calculator</p>
+                    <div class="mt-auto pt-6 text-xs uppercase tracking-widest text-[#22f0ff]">LAUNCH TOOL →</div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black/40 border-t border-white/10 py-12">
+        <div class="max-w-7xl mx-auto px-5 text-center">
+            <div class="typing-container mx-auto max-w-fit">
+                <span id="typing-text" class="typing-text">MORE TOOLS ARE COMMING......</span>
+            </div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-5 text-center text-xs text-white/40 mt-10">
+            © 2026 A. Rahim • Built with neon &amp; glassmorphism
+        </div>
+    </footer>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('health-form');
-            const maleRadio = document.getElementById('male');
-            const femaleRadio = document.getElementById('female');
-            
-            const boySvg = document.getElementById('boy-svg');
-            const girlSvg = document.getElementById('girl-svg');
-            const avatarScale = document.getElementById('avatar-scale');
-            
-            const resultBox = document.getElementById('result-box');
-            const waitingText = document.getElementById('waiting-text');
-            
-            const bmiResultText = document.getElementById('bmi-result');
-            const bmrResultText = document.getElementById('bmr-result');
-            const healthStatusText = document.getElementById('health-status');
-            
-            const adviceSection = document.getElementById('advice-section');
-            const adviceList = document.getElementById('advice-list');
+        function initialize() {
+            createBackgroundOrbs();
+            createNeonLines();
+            createParticles();
+            showWelcomePopup();
+            startTypingAnimation();
 
-            // Toggle character based on gender selection
-            const updateCharacter = () => {
-                if (maleRadio.checked) {
-                    boySvg.classList.remove('hidden');
-                    girlSvg.classList.add('hidden');
-                } else {
-                    boySvg.classList.add('hidden');
-                    girlSvg.classList.remove('hidden');
-                }
-            };
-
-            maleRadio.addEventListener('change', updateCharacter);
-            femaleRadio.addEventListener('change', updateCharacter);
-
-            // Handle Form Submission
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                // Get input values
-                const age = parseFloat(document.getElementById('age').value);
-                const weight = parseFloat(document.getElementById('weight').value);
-                const feet = parseFloat(document.getElementById('feet').value);
-                let inches = parseFloat(document.getElementById('inches').value);
-                
-                const gender = maleRadio.checked ? 'male' : 'female';
-
-                // Input validation
-                if (!age || !weight || !feet) return;
-                if (isNaN(inches)) inches = 0; // যদি কেউ ইঞ্চি ফাঁকা রাখে, তবে ০ ধরে নেবে
-
-                // Convert Feet & Inches to Centimeters
-                // ১ ফুট = ৩০.৪৮ সে.মি. এবং ১ ইঞ্চি = ২.৫৪ সে.মি.
-                const heightInCm = (feet * 30.48) + (inches * 2.54);
-                
-                // BMI Calculation: weight (kg) / [height (m)]^2
-                const heightInMeters = heightInCm / 100;
-                const bmi = weight / (heightInMeters * heightInMeters);
-
-                // BMR Calculation (Mifflin-St Jeor Equation)
-                let bmr = 0;
-                if (gender === 'male') {
-                    bmr = (10 * weight) + (6.25 * heightInCm) - (5 * age) + 5;
-                } else {
-                    bmr = (10 * weight) + (6.25 * heightInCm) - (5 * age) - 161;
-                }
-
-                // Update texts
-                bmiResultText.innerText = bmi.toFixed(2);
-                bmrResultText.innerText = Math.round(bmr) + ' ক্যালরি/দিন';
-
-                // Determine Health Status, Character Scale and Advice
-                let scaleX = 1;
-                let adviceHtml = "";
-                
-                // Reset Classes
-                healthStatusText.className = "text-lg md:text-xl font-bold transition-colors duration-300";
-
-                if (bmi < 18.5) {
-                    healthStatusText.innerText = "আপনার ওজন স্বাভাবিকের চেয়ে কম, স্বাস্থ্য ঝুঁকি রয়েছে";
-                    healthStatusText.classList.add("text-yellow-600");
-                    scaleX = 0.65; // Thin
-                    adviceHtml = `
-                        <li><span class="text-yellow-600 font-bold">⚠️</span> <b>ওজন বাড়াতে হবে:</b> পুষ্টিকর ও ক্যালরিযুক্ত খাবার গ্রহণ করুন।</li>
-                        <li><span class="text-green-600 font-bold">✔️</span> <b>বেশি খাবেন:</b> ডিম, দুধ, কলা, কাঠবাদাম, চিনা বাদাম, মাছ-মাংস, ডাল, আলু এবং দেশি ঘি।</li>
-                        <li><span class="text-blue-500 font-bold">🏃</span> <b>জীবনযাপন:</b> পেশি গঠনের জন্য হালকা ব্যায়াম করুন, প্রতিদিন ৭-৮ ঘণ্টা ঘুমান এবং সময়মতো খাবার খাওয়ার অভ্যাস করুন।</li>
-                    `;
-                } 
-                else if (bmi >= 18.5 && bmi <= 24.9) {
-                    healthStatusText.innerText = "আপনি সুস্থ আছেন";
-                    healthStatusText.classList.add("text-green-600");
-                    scaleX = 1.0; // Normal
-                    adviceHtml = `
-                        <li><span class="text-green-600 font-bold">🎉</span> <b>অভিনন্দন!</b> আপনার ওজন একদম সঠিক আছে। এই চমৎকার স্বাস্থ্য ধরে রাখতে বর্তমান রুটিন মেনে চলুন।</li>
-                        <li><span class="text-blue-500 font-bold">💧</span> <b>পরামর্শ:</b> প্রতিদিন স্বাস্থ্যকর ও সুষম খাবার খান এবং পর্যাপ্ত পরিমাণ পানি পান করুন।</li>
-                        <li><span class="text-purple-500 font-bold">🏃</span> <b>ব্যায়াম:</b> শরীর সবসময় ফিট রাখতে প্রতিদিন অন্তত ২০-৩০ মিনিট হাঁটা বা হালকা শারীরিক পরিশ্রম চালিয়ে যান।</li>
-                    `;
-                } 
-                else if (bmi >= 25 && bmi <= 29.9) {
-                    healthStatusText.innerText = "আপনার ওজন বেশি, স্বাস্থ্য ঝুঁকি রয়েছে";
-                    healthStatusText.classList.add("text-red-500");
-                    scaleX = 1.35; // Overweight
-                    adviceHtml = `
-                        <li><span class="text-red-500 font-bold">⚠️</span> <b>জীবনযাপনে পরিবর্তন:</b> আপনার ওজন কমাতে হবে, তাই খাদ্যাভ্যাসে কিছুটা নিয়ন্ত্রণ আনা জরুরি।</li>
-                        <li><span class="text-red-600 font-bold">❌</span> <b>কম খাবেন:</b> চিনি বা মিষ্টিজাতীয় খাবার, ফাস্ট ফুড, কোমল পানীয় (Soft drinks), এবং অতিরিক্ত ভাত বা রুটি।</li>
-                        <li><span class="text-green-600 font-bold">✔️</span> <b>বেশি খাবেন:</b> শাকসবজি, দেশি ফলমূল এবং আঁশযুক্ত (ফাইবার) খাবার।</li>
-                        <li><span class="text-blue-500 font-bold">🏃</span> <b>ব্যায়াম:</b> প্রতিদিন কমপক্ষে ৩০-৪০ মিনিট ঘাম ঝরিয়ে হাঁটার বা ব্যায়াম করার চেষ্টা করুন।</li>
-                    `;
-                } 
-                else {
-                    healthStatusText.innerText = "আপনার ওজন অনেক বেশি, স্বাস্থ্য ঝুঁকি রয়েছে";
-                    healthStatusText.classList.add("text-red-600");
-                    scaleX = 1.65; // Obese
-                    adviceHtml = `
-                        <li><span class="text-red-600 font-bold">⚠️</span> <b>সতর্কতা:</b> আপনার অতিরিক্ত ওজন রয়েছে যা দীর্ঘমেয়াদী স্বাস্থ্য ঝুঁকির কারণ। দ্রুত ওজন কমানোর পদক্ষেপ নিন।</li>
-                        <li><span class="text-red-600 font-bold">❌</span> <b>সম্পূর্ণ বাদ দিন:</b> মিষ্টি, ফাস্ট ফুড, প্রসেসড ফুড, তেলে ভাজা খাবার এবং কোমল পানীয়।</li>
-                        <li><span class="text-green-600 font-bold">✔️</span> <b>খাবারের রুটিন:</b> ভাত বা রুটির পরিমাণ একদম কমিয়ে দিন। তার বদলে প্রচুর শাকসবজি, প্রোটিন (ডিম, মাছ) এবং সালাদ খান।</li>
-                        <li><span class="text-blue-500 font-bold">🏃</span> <b>ব্যায়াম ও পরামর্শ:</b> প্রতিদিন অন্তত ৪৫-৬০ মিনিট ব্যায়াম বা হাঁটা বাধ্যতামূলক। প্রয়োজনে একজন পুষ্টিবিদের (Dietitian) সাহায্য নিন।</li>
-                    `;
-                }
-
-                // Apply dynamic stretching to character to visually represent body type
-                avatarScale.style.transform = `scaleX(${scaleX})`;
-
-                // Populate Advice List and Show
-                adviceList.innerHTML = adviceHtml;
-                adviceSection.classList.remove('hidden');
-
-                // Show Results Box with Animation
-                waitingText.classList.add('hidden');
-                resultBox.classList.remove('hidden');
-                // Small delay to allow display:block to apply before animating opacity
-                setTimeout(() => {
-                    resultBox.classList.remove('opacity-0', 'translate-y-4');
-                    resultBox.classList.add('opacity-100', 'translate-y-0');
-                }, 50);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === "Escape") closePopup();
             });
-        });
+
+            document.getElementById('welcome-popup').addEventListener('click', (e) => {
+                if (e.target.id === 'welcome-popup') closePopup();
+            });
+        }
+
+        function createBackgroundOrbs() {
+            const container = document.getElementById('orbs');
+            for (let i = 0; i < 8; i++) {
+                const orb = document.createElement('div');
+                orb.className = 'energy-orb';
+                const size = Math.random() * 280 + 120;
+                orb.style.width = `${size}px`;
+                orb.style.height = `${size}px`;
+                orb.style.left = `${Math.random() * 100}%`;
+                orb.style.top = `${Math.random() * 100}%`;
+                orb.style.animationDuration = `${Math.random() * 35 + 25}s`;
+                orb.style.animationDelay = `-${Math.random() * 30}s`;
+                orb.style.setProperty('--x', `${(Math.random() - 0.5) * 400}px`);
+                orb.style.setProperty('--y', `${(Math.random() - 0.5) * 400}px`);
+                container.appendChild(orb);
+            }
+        }
+
+        function createNeonLines() {
+            const container = document.getElementById('neon-lines');
+            for (let i = 0; i < 6; i++) {
+                const line = document.createElement('div');
+                line.className = 'neon-line';
+                line.style.top = `${Math.random() * 100}%`;
+                line.style.width = `${Math.random() * 400 + 200}px`;
+                line.style.animationDuration = `${Math.random() * 30 + 20}s`;
+                line.style.animationDelay = `-${Math.random() * 25}s`;
+                line.style.opacity = Math.random() * 0.4 + 0.2;
+                container.appendChild(line);
+            }
+        }
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 5 + 2;
+                p.style.width = `${size}px`;
+                p.style.height = `${size}px`;
+                p.style.left = `${Math.random() * 100}%`;
+                p.style.top = `${Math.random() * 100}%`;
+                p.style.animationDuration = `${Math.random() * 8 + 6}s`;
+                p.style.animationDelay = `-${Math.random() * 8}s`;
+                container.appendChild(p);
+            }
+        }
+
+        function showWelcomePopup() {
+            const popup = document.getElementById('welcome-popup');
+            const card = document.getElementById('popup-card');
+            popup.style.display = 'flex';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.75) translateY(40px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 1s cubic-bezier(0.23, 1, 0.32, 1)';
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1) translateY(0)';
+            }, 100);
+        }
+
+        function closePopup() {
+            const popup = document.getElementById('welcome-popup');
+            const card = document.getElementById('popup-card');
+            card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 1, 1)';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.8) translateY(30px)';
+            
+            setTimeout(() => {
+                popup.style.transition = 'opacity 0.6s';
+                popup.style.opacity = '0';
+                setTimeout(() => { popup.style.display = 'none'; popup.style.opacity = '1'; }, 600);
+            }, 400);
+        }
+
+        function startTypingAnimation() {
+            const textElement = document.getElementById('typing-text');
+            const fullText = "MORE TOOLS ARE COMMING......";
+            textElement.textContent = "";
+            
+            let i = 0;
+            const typeSpeed = 80;
+
+            function type() {
+                if (i < fullText.length) {
+                    textElement.textContent += fullText.charAt(i);
+                    i++;
+                    setTimeout(type, typeSpeed);
+                } else {
+                    setTimeout(() => {
+                        textElement.textContent = "";
+                        i = 0;
+                        type();
+                    }, 3000);
+                }
+            }
+            type();
+        }
+
+        window.onload = initialize;
     </script>
 </body>
 </html>
