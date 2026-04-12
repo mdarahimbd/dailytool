@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator - Daily Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&display=swap');
+        
+        body {
+            background: linear-gradient(135deg, #0a0a1f, #1a0033);
+            font-family: 'Inter', sans-serif;
+        }
+        .heading-font { font-family: 'Space Grotesk', sans-serif; }
+        
+        .neon-input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #22f0ff;
+        }
+        .neon-input:focus {
+            border-color: #c724ff;
+            box-shadow: 0 0 25px #c724ff;
+        }
+        #qrcode {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(34, 240, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white flex items-center justify-center p-6">
+    <div class="max-w-lg w-full">
+        <div class="text-center mb-10">
+            <h1 class="text-5xl heading-font gradient-text">QR Code Generator</h1>
+            <p class="text-white/60 mt-2">High Quality • Print Ready for A4</p>
+        </div>
+
+        <div class="glass rounded-3xl p-8 shadow-2xl">
+            <textarea id="text-input" rows="4"
+                class="neon-input w-full rounded-2xl p-5 text-white placeholder-gray-400 focus:outline-none"
+                placeholder="Enter text, website link, WhatsApp number, etc..."></textarea>
+
+            <div class="mt-6">
+                <label class="text-sm text-white/70 block mb-2">QR Code Size (for A4 Print)</label>
+                <select id="size-select" class="neon-input w-full rounded-2xl p-4 text-white">
+                    <option value="512">Medium (Good for A4)</option>
+                    <option value="1024" selected>High Quality (Best for A4 Print)</option>
+                    <option value="2048">Ultra High (Maximum Clarity)</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mt-8">
+                <button onclick="generateQR()" 
+                        class="bg-gradient-to-r from-[#22f0ff] to-[#c724ff] text-black font-bold py-5 rounded-2xl hover:scale-105 transition">
+                    Generate QR Code
+                </button>
+                <button onclick="downloadQR()" 
+                        class="border border-[#22f0ff] hover:bg-white/10 font-bold py-5 rounded-2xl transition">
+                    Download High-Res PNG
+                </button>
+            </div>
+
+            <div class="mt-10 flex justify-center">
+                <div id="qrcode-container" class="hidden text-center">
+                    <div id="qrcode" class="mx-auto"></div>
+                    <p class="text-xs text-white/50 mt-6">High Resolution • Perfect for A4 Documents</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-8">
+            <a href="../index.html" class="text-[#22f0ff] hover:underline">← Back to Daily Tool</a>
+        </div>
+    </div>
+
+    <script>
+        let currentQR = null;
+
+        function generateQR() {
+            const text = document.getElementById('text-input').value.trim();
+            const size = parseInt(document.getElementById('size-select').value);
+            const container = document.getElementById('qrcode-container');
+            const qrDiv = document.getElementById('qrcode');
+
+            if (!text) {
+                alert("Please enter text or URL!");
+                return;
+            }
+
+            qrDiv.innerHTML = '';
+
+            currentQR = new QRCode(qrDiv, {
+                text: text,
+                width: size,
+                height: size,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            container.classList.remove('hidden');
+        }
+
+        function downloadQR() {
+            const qrDiv = document.getElementById('qrcode');
+            if (!qrDiv.innerHTML) {
+                alert("Please generate QR code first!");
+                return;
+            }
+
+            const canvas = qrDiv.querySelector('canvas');
+            const link = document.createElement('a');
+            
+            // High quality download
+            link.download = 'QR-Code-High-Quality.png';
+            link.href = canvas.toDataURL('image/png', 1.0); // 1.0 = maximum quality
+            link.click();
+        }
+
+        // Generate on Enter
+        document.getElementById('text-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                generateQR();
+            }
+        });
+    </script>
+</body>
+</html>
